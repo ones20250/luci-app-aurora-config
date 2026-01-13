@@ -230,8 +230,7 @@ msgstr "语义颜色"
 
 #: applications/luci-app-aurora-config/htdocs/luci-static/resources/view/aurora/theme.js:97
 msgid "Semantic colors convey different operational behaviors, primarily used for buttons and badge elements. Each semantic type has two colors: the base color for backgrounds and the text color for content. The primary color affects form components (input, radio, checkbox, textarea, select, dynamic list) in hover, focus, and active states."
-msgstr "语义色用于传达不同的操作行为，主要应用于按钮和徽章元素。每种语义类型包含两种颜色：用于背景的基色和用于内容的文本色。主色（Primary color）会影响表单组件（输入框、单选框、复选框、文本区域、选择框、动态列表）在悬停、聚焦和激活状态下的显示。
-"
+msgstr "语义色用于传达不同的操作行为，主要应用于按钮和徽章元素。主色（Primary color）会影响表单组件（输入框、单选框、复选框、文本区域、选择框、动态列表）在悬停、聚焦和激活状态下的显示。每种语义类型包含两种颜色：用于背景的基色和用于内容的文本色。"
 
 #: applications/luci-app-aurora-config/htdocs/luci-static/resources/view/aurora/theme.js:443
 msgid "Spacing"
@@ -243,7 +242,7 @@ msgstr "状态颜色"
 
 #: applications/luci-app-aurora-config/htdocs/luci-static/resources/view/aurora/theme.js:104
 msgid "Status colors indicate different system states and feedback (default, success, info, warning, error). Each status has two colors: the base color for backgrounds and the text color for content. Applied to tooltips, alert messages, labels, and legends."
-msgstr "状态色用于表示系统的不同状态和反馈（默认、成功、信息、警告、错误）。每种状态包含两种颜色：用于背景的基色和用于内容的文本色。适用于提示信息、警告消息、标签和图例。"
+msgstr "状态色用于表示系统的不同状态和反馈（默认、成功、信息、警告、错误）。适用于tooltips、alert 弹窗、标签和图例组件。每种状态包含两种颜色：用于背景的基色和用于内容的文本色。"
 
 #: applications/luci-app-aurora-config/htdocs/luci-static/resources/view/aurora/theme.js:401
 msgid "Structure"

@@ -165,44 +165,104 @@ const createColorSections = (ss, mode, colorVars) => {
   });
 };
 
-const renderSpacingControl = function (option_index, section_id, in_table) {
-  const self = this;
-  const el = form.Value.prototype.render.apply(this, [
-    option_index,
-    section_id,
-    in_table,
-  ]);
-  return Promise.resolve(el).then((element) => {
-    const input = element.querySelector("input");
-    if (input) {
-      input.type = "hidden";
-      const numValue = parseFloat(input.value || self.default) || 0.25;
-      const valueDisplay = E(
-        "span",
-        {
-          style: "margin-left: 10px; min-width: 60px; display: inline-block;",
-        },
-        `${numValue.toFixed(2)}rem`,
-      );
-      const rangeInput = E("input", {
-        type: "range",
-        min: "-0.1",
-        max: "0.5",
-        step: "0.05",
-        value: numValue,
-        style: "width: 200px; vertical-align: middle;",
-        input: function () {
-          const val = `${parseFloat(this.value).toFixed(2)}rem`;
-          input.value = val;
-          valueDisplay.textContent = val;
-        },
-      });
-      input.parentNode.appendChild(rangeInput);
-      input.parentNode.appendChild(valueDisplay);
-    }
-    return element;
-  });
+const createRangeControlRenderer = (config) => {
+  return function (option_index, section_id, in_table) {
+    const self = this;
+    const el = form.Value.prototype.render.apply(this, [
+      option_index,
+      section_id,
+      in_table,
+    ]);
+    return Promise.resolve(el).then((element) => {
+      const input = element.querySelector("input");
+      if (input) {
+        input.type = "hidden";
+        const numValue =
+          parseFloat(input.value || self.default) || config.default;
+
+        const valueDisplay = E(
+          "span",
+          {
+            style: `margin-left: 10px; min-width: ${config.displayWidth}px; display: inline-block;`,
+          },
+          `${numValue.toFixed(config.precision)}rem`,
+        );
+
+        const getMaxValue = () => {
+          if (typeof config.max === "function") {
+            return config.max().toString();
+          }
+          return config.max.toString();
+        };
+
+        const maxValue = getMaxValue();
+
+        const rangeInput = E("input", {
+          type: "range",
+          min: config.min.toString(),
+          max: maxValue,
+          step: config.step.toString(),
+          value: numValue,
+          style: "width: 200px; vertical-align: middle;",
+          input: function () {
+            const val = `${parseFloat(this.value).toFixed(config.precision)}rem`;
+            input.value = val;
+            valueDisplay.textContent = val;
+          },
+        });
+
+        if (typeof config.max === "function") {
+          const handleResize = () => {
+            const newMaxWidth = config.max();
+            rangeInput.max = newMaxWidth.toString();
+            if (parseFloat(rangeInput.value) > newMaxWidth) {
+              rangeInput.value = newMaxWidth;
+              const val = `${newMaxWidth.toFixed(config.precision)}rem`;
+              input.value = val;
+              valueDisplay.textContent = val;
+            }
+          };
+
+          window.addEventListener("resize", handleResize);
+        }
+
+        input.parentNode.appendChild(rangeInput);
+        input.parentNode.appendChild(valueDisplay);
+      }
+      return element;
+    });
+  };
 };
+
+const renderSpacingControl = createRangeControlRenderer({
+  min: "-0.1",
+  max: "0.5",
+  step: "0.05",
+  default: 0.25,
+  precision: 2,
+  displayWidth: 60,
+});
+
+const renderContainerMaxWidthControl = createRangeControlRenderer({
+  min: "72",
+  max: () => {
+    const getRootFontSize = () => {
+      return parseFloat(
+        window.getComputedStyle(document.documentElement).fontSize,
+      );
+    };
+
+    const screenWidth = window.innerWidth;
+    const maxWidthPx = screenWidth * (23 / 24);
+    const rootFontSize = getRootFontSize();
+    const maxWidthRem = Math.floor((maxWidthPx / rootFontSize) * 10) / 10;
+    return Math.max(maxWidthRem, 80);
+  },
+  step: "1",
+  default: 80,
+  precision: 1,
+  displayWidth: 80,
+});
 
 const createIconUploadButton = (ss, tmpPath) => {
   const so = ss.option(form.Button, "_upload_icon", _("Upload Icon"));
@@ -575,7 +635,7 @@ return view.extend({
       "aurora",
       _("Layout"),
       _(
-        "Control how the navigation menu displays and adjust the spacing between interface elements. These settings affect the overall look and feel of the interface.",
+        "Customize the layout of your interface. Control how the navigation menu displays, adjust the spacing between interface elements, and set the maximum width of the main content container.",
       ),
     );
     const structureSubsection = structureSection.subsection;
@@ -599,6 +659,16 @@ return view.extend({
     so.placeholder = "0.25rem";
     so.rmempty = false;
     so.render = renderSpacingControl;
+
+    so = structureSubsection.option(
+      form.Value,
+      "struct_container_max_width",
+      _("Content Container Max Width"),
+    );
+    so.default = "80rem";
+    so.placeholder = "80rem";
+    so.rmempty = false;
+    so.render = renderContainerMaxWidthControl;
 
     const iconSection = s.taboption(
       "icons_toolbar",

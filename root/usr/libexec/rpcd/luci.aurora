@@ -188,8 +188,8 @@ case "$1" in
 
 	"check_updates")
 		pkg_manager=$(detect_package_manager)
-		theme_api_url="https://api.github.com/repos/eamonxg/luci-theme-aurora/releases/latest"
-		config_api_url="https://api.github.com/repos/eamonxg/luci-app-aurora-config/releases/latest"
+		theme_api_url="https://api.github.com/repos/ones20250/luci-theme-aurora/releases/latest"
+		config_api_url="https://api.github.com/repos/ones20250/luci-app-aurora-config/releases/latest"
 
 		theme_response=$(wget -qO- --timeout=10 "$theme_api_url" 2>/dev/null)
 		config_response=$(wget -qO- --timeout=10 "$config_api_url" 2>/dev/null)
@@ -254,14 +254,14 @@ case "$1" in
 		read -r input; json_load "$input"; json_get_var repo "repo"; json_get_var version "version"; json_get_var package_filter "package_filter"; json_cleanup
 		mkdir -p "$DOWNLOAD_PATH"
 		tag_name="v$version"
-		api_url="https://api.github.com/repos/eamonxg/$repo/releases/tags/$tag_name"
+		api_url="https://api.github.com/repos/ones20250/$repo/releases/tags/$tag_name"
 		response=$(wget -qO- --timeout=10 "$api_url" 2>/dev/null)
 		[ -z "$response" ] && { echo '{ "error": "Failed to fetch release info", "result": 1 }'; exit 1; }
 
 		pkg_manager=$(detect_package_manager)
 		package_name=""; [ "$repo" = "luci-theme-aurora" ] && package_name="luci-theme-aurora"; [ "$repo" = "luci-app-aurora-config" ] && package_name="luci-app-aurora-config"
 		file_ext="ipk"; [ "$pkg_manager" = "apk" ] && file_ext="apk"
-		download_url="https://github.com/eamonxg/$repo/releases/download/$tag_name"
+		download_url="https://github.com/ones20250/$repo/releases/download/$tag_name"
 		downloaded_files=""
 
 		if [ -n "$package_filter" ]; then
